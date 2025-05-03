@@ -3,7 +3,7 @@ drop table if exists dim.block
 
 create table dim.block as (
 
-with block_data as (
+with src_block as (
 	select distinct
 		-- Apply some basic data cleaning to string fields (good place to use a dbt macro)
 		-- For standardization across models, select block hash again as the natural key
@@ -11,10 +11,30 @@ with block_data as (
 		, trim(block_hash::varchar) as block_hash
 		, trim(prev_block_hash::varchar) as prev_block_hash
 		, blockheight::int as blockheight
+		-- Create a dummy timestamp for deduplication (ideally there is a real audit timestamp from src data)
+		, current_timestamp as audit_created_timestamp
 	from src.block
 	where trim(block_hash) is not null
 )
 
+-- Best practice is to deduplicate records based on some metadata/audit timestamp
+, deduplicate as (
+	select *
+	from (
+		select
+			  *
+			, row_number() over (
+				-- The partition defines the data granularity (unique natural key or keys)
+				partition by block_key
+				-- Best practice is to deduplicate records based on an actual metadata/audit timestamp
+				order by audit_created_timestamp desc
+			) as dedupe_rn
+		from src_block
+	)
+	where dedupe_rn = 1
+)
+
+-- Specify final data types, derived cols, create surrogate id for dim table
 , standardize as (
 	select
 		-- Create a surrogate key for dim table (a stored proc or dbt macro could be used)
@@ -35,38 +55,23 @@ with block_data as (
 			then true
 			else false
 		end)::boolean as is_difficulty_adjustment
-		-- Create a dummy timestamp for deduplication (ideally there is a real audit timestamp from src data)
-		, current_timestamp as audit_created_timestamp
-	from block_data
-)
+		, audit_created_timestamp::timestamp as audit_created_timestamp
+	from deduplicate
 
--- Best practice is to deduplicate records based on some metadata/audit timestamp
-, deduplicated as (
+	-- Create any default or special rows for dim table ('[Unknown]', '[N/A]', '[All]', etc)
+	union all
 	select
-		  block_id
-		, block_key
-		, block_hash
-		, prev_block_hash
-		, is_subsidy_halving
-		, is_difficulty_adjustment
-		, audit_created_timestamp
-	from (
-		select
-			  *
-			, row_number() over (
-				-- This defines the data granularity (unique natural key or keys)
-				partition by block_key
-				-- Best practice is to deduplicate records based on an actual metadata/audit timestamp
-				order by audit_created_timestamp desc
-			) as dedupe_rn
-		from standardize
-	)
-	-- Postgres does not allow you to `qualify` a row number without actually selecting it (so we can't select *)
-	where dedupe_rn = 1
+		  '0'::varchar(512) as block_id
+		, '[Unknown]'::varchar(256) as block_key
+		, '[Unknown]'::varchar(256) as block_hash
+		, '[Unknown]'::varchar(256) as prev_block_hash
+		, null::boolean as is_subsidy_halving
+		, null::boolean is_difficulty_adjustment
+		, null::timestamp as audit_created_timestamp
 )
 
 select *
-from deduplicated
+from standardize
 
 );
 
