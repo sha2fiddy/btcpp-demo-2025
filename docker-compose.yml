@@ -17,13 +17,11 @@ services:
       - "5432:5432"
     volumes:
       - ./migrations/00001-create-schemas.sql:/docker-entrypoint-initdb.d/00001-create-schemas.sql
-      # - ./migrations/00002-example-insert.sql:/docker-entrypoint-initdb.d/00002-example-insert.sql
-      # - ./migrations/00003-example-copy.sql:/docker-entrypoint-initdb.d/00003-example-copy.sql
-      - ./migrations/00004-insert-dim-date.sql:/docker-entrypoint-initdb.d/00004-insert-dim-date.sql
-      - ./migrations/00005-copy-src-block.sql:/docker-entrypoint-initdb.d/00005-copy-src-block.sql
-      - ./migrations/00006-copy-src-hashrate.sql:/docker-entrypoint-initdb.d/00006-copy-src-hashrate.sql
-      - ./migrations/00007-copy-src-pool.sql:/docker-entrypoint-initdb.d/00007-copy-src-pool.sql
-      - ./migrations/00008-copy-src-price.sql:/docker-entrypoint-initdb.d/00008-copy-src-price.sql
+      - ./migrations/00002-insert-dim-date.sql:/docker-entrypoint-initdb.d/00002-insert-dim-date.sql
+      - ./migrations/00003-copy-src-block.sql:/docker-entrypoint-initdb.d/00003-copy-src-block.sql
+      - ./migrations/00004-copy-src-hashrate.sql:/docker-entrypoint-initdb.d/00004-copy-src-hashrate.sql
+      - ./migrations/00005-copy-src-pool.sql:/docker-entrypoint-initdb.d/00005-copy-src-pool.sql
+      - ./migrations/00006-copy-src-price.sql:/docker-entrypoint-initdb.d/00006-copy-src-price.sql
       - ./data:/data
   pgadmin:
     container_name: pgadmin

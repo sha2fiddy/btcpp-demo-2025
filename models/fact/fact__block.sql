@@ -39,7 +39,6 @@ with src_block as (
 	where dedupe_rn = 1
 )
 
--- Establish join relationships and obtain dim surrogate keys
 , relations as (
 	select
 		  dd.date_id
