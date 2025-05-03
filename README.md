@@ -55,8 +55,14 @@ The date dimension model is part of the initial migrations and will be built aut
 ### Data Granularity
 - `date_id`
 
+## DIM Block
+Create a Bitcoin block dimension model to hold any categorical data pertaining to each block, such as `block_hash`, `prev_block_hash`.
+
+### Data Granularity
+- `block_id`
+
 ## DIM Pool
-Create a pool dimension model with a formatted display name and url, as well as flags which are helpful for analaysis (e.g. if the pool is part of 'Antpool & Friends'). The primary surrogate key of the pool dimension is `pool_id` which is an MD5 hash of the natural key, `pool_key`.
+Create a pool dimension model with a formatted display name and url, as well as flags which are helpful for analaysis, such as `is_antpool_friend`.
 
 ### Data Granularity
 - `pool_id`
@@ -64,10 +70,10 @@ Create a pool dimension model with a formatted display name and url, as well as 
 ---
 
 ## FACT Block
-Create a Bitcoin block fact model with the `blockheight`, `timestamp`, and numerical data such as `block_size`, `reward_subsidy`. **NOTE**: if you are dealing with transaction-level data, it may make sense to also have a Bitcoin block dimension model to contain the categorical data, and keep the numeric data in the fact model. Here, we are just creating a fact, and including categorical attributes such as `block_hash` directly (this practice is commonly referred to as a 'degenerate dimension').
+Create a Bitcoin block fact model with the `blockheight`, `timestamp`, and numerical data such as `block_size`, `reward_subsidy`. **NOTE**: if guarenteed to never have lower than block-level data (IE no transaction-level data), it is possible to include attributes from the Bitcoin block dimension model directly in this fact.  This practice is commonly referred to as a 'degenerate dimension'.
 
 ### Data Granularity
-- `block_hash`
+- `block_id`
 
 ### Foreign Key Relationships
 - `date_id`
