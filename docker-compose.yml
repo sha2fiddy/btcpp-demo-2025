@@ -1,0 +1,36 @@
+---
+version: "3"
+
+services:
+  postgres:
+    image: postgres${POSTGRES_VERSION_TAG}
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./migrations/00001-create-schemas.sql:/docker-entrypoint-initdb.d/00001-create-schemas.sql
+      # - ./migrations/00002-example-insert.sql:/docker-entrypoint-initdb.d/00002-example-insert.sql
+      # - ./migrations/00003-example-copy.sql:/docker-entrypoint-initdb.d/00003-example-copy.sql
+      - ./migrations/00004-insert-dim-date.sql:/docker-entrypoint-initdb.d/00004-insert-dim-date.sql
+      - ./migrations/00005-copy-src-block.sql:/docker-entrypoint-initdb.d/00005-copy-src-block.sql
+      - ./migrations/00006-copy-src-hashrate.sql:/docker-entrypoint-initdb.d/00006-copy-src-hashrate.sql
+      - ./migrations/00007-copy-src-pool.sql:/docker-entrypoint-initdb.d/00007-copy-src-pool.sql
+      - ./migrations/00008-copy-src-price.sql:/docker-entrypoint-initdb.d/00008-copy-src-price.sql
+      - ./data:/data
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"

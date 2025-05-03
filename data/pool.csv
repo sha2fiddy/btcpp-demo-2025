@@ -1,0 +1,160 @@
+pool_key,pool_name,pool_url,is_antpool_friend_custodian,is_antpool_friend_template
+175btc,175btc,https://www.175btc.com,FALSE,FALSE
+1hash,1Hash,https://www.1hash.com,FALSE,FALSE
+1m1x,1M1X,,FALSE,FALSE
+1thash,1THash,https://www.1thash.top,FALSE,FALSE
+21inc,21 Inc.,https://21.co,FALSE,FALSE
+50btc,50BTC,https://www.50btc.com,FALSE,FALSE
+58coin,58COIN,https://www.58coin.com,FALSE,FALSE
+7pool,7pool,https://7pool.com,FALSE,FALSE
+8baochi,8baochi,https://8baochi.com,FALSE,FALSE
+aaopool,AAO Pool,https://btc.tmspool.top,FALSE,FALSE
+antpool,Antpool,https://www.antpool.com/,TRUE,TRUE
+arkpool,ArkPool,https://www.arkpool.com,FALSE,FALSE
+asicminer,ASICMiner,https://www.asicminer.co,FALSE,FALSE
+axbt,A-XBT,https://www.a-xbt.com,FALSE,FALSE
+batpool,BATPOOL,https://www.batpool.com,FALSE,FALSE
+bcmonster,BCMonster,https://www.bcmonster.com,FALSE,FALSE
+bcpoolio,bcpool.io,https://bcpool.io,FALSE,FALSE
+binancepool,Binancepool,https://pool.binance.com,TRUE,TRUE
+bitclub,BitClub,https://bitclubpool.com,FALSE,FALSE
+bitcoinaffiliatenetwork,Bitcoin Affiliate Network,https://mining.bitcoinaffiliatenetwork.com,FALSE,FALSE
+bitcoincom,Bitcoin.com,https://www.bitcoin.com,FALSE,FALSE
+bitcoinindia,Bitcoin India,https://bitcoin-india.org,FALSE,FALSE
+bitcoinrussia,BitcoinRussia,https://bitcoin-russia.ru,FALSE,FALSE
+bitcoinukraine,Bitcoin-Ukraine,https://bitcoin-ukraine.com.ua,FALSE,FALSE
+bitdeer,Bitdeer,https://www.bitdeerpool.com/,FALSE,FALSE
+bitfarms,Bitfarms,https://www.bitfarms.io,FALSE,FALSE
+bitfufu,BitFuFu,https://www.bitfufu.com/,FALSE,FALSE
+bitfufupool,BitFuFuPool,https://www.bitfufu.com/pool,FALSE,FALSE
+bitfury,BitFury,https://bitfury.com,FALSE,FALSE
+bitminter,BitMinter,https://bitminter.com,FALSE,FALSE
+bitparking,Bitparking,https://mmpool.bitparking.com,FALSE,FALSE
+bitsolo,Bitsolo,https://bitsolo.net,FALSE,FALSE
+bixin,Bixin,https://haopool.com,FALSE,FALSE
+blockfills,BlockFills,https://www.blockfills.com/mining,FALSE,FALSE
+blockware,Blockware,https://www.blockwaresolutions.com/,FALSE,FALSE
+braiinspool,Braiinspool,https://braiins.com/pool,TRUE,TRUE
+bravomining,Bravo Mining,https://www.bravo-mining.com,FALSE,FALSE
+btcc,BTCC,https://pool.btcc.com,FALSE,FALSE
+btccom,Btccom,https://pool.btc.com/,TRUE,TRUE
+btcdig,BTCDig,https://btcdig.com,FALSE,FALSE
+btcguild,BTC Guild,https://www.btcguild.com,FALSE,FALSE
+btcmp,BTCMP,https://www.btcmp.com,FALSE,FALSE
+btcnuggets,BTC Nuggets,https://104.197.8.250,FALSE,FALSE
+btcpoolparty,BTC Pool Party,https://btcpoolparty.com,FALSE,FALSE
+btcserv,BTCServ,https://btcserv.net,FALSE,FALSE
+btctop,BTC.TOP,https://btc.top,FALSE,FALSE
+btpool,BTPOOL,,FALSE,FALSE
+bwpool,BWPool,https://bwpool.net,FALSE,FALSE
+bytepool,BytePool,https://www.bytepool.com,FALSE,FALSE
+canoepool,CanoePool,https://btc.canoepool.com,FALSE,FALSE
+carbonnegative,Carbon Negative,https://github.com/bitcoin-data/mining-pools/issues/48,FALSE,FALSE
+ckpool,CKPool,https://ckpool.org,FALSE,FALSE
+cloudhashing,CloudHashing,https://cloudhashing.com,FALSE,FALSE
+coinlab,CoinLab,https://coinlab.com,FALSE,FALSE
+cointerra,Cointerra,https://cointerra.com,FALSE,FALSE
+computenorth,Compute North,,FALSE,FALSE
+connectbtc,ConnectBTC,https://www.connectbtc.com,FALSE,FALSE
+dcex,DCEX,https://dcexploration.cn,FALSE,FALSE
+dcexploration,DCExploration,https://dcexploration.cn,FALSE,FALSE
+digitalbtc,digitalBTC,https://digitalbtc.com,FALSE,FALSE
+digitalxmintsy,digitalX Mintsy,https://www.mintsy.co,FALSE,FALSE
+dpool,DPOOL,https://www.dpool.top,FALSE,FALSE
+eclipsemc,EclipseMC,https://eclipsemc.com,FALSE,FALSE
+ekanembtc,EkanemBTC,https://ekanembtc.com,FALSE,FALSE
+eligius,Eligius,https://eligius.st,FALSE,FALSE
+emcdpool,Emcdpool,https://emcd.io/pool/,FALSE,TRUE
+eobot,Eobot,https://eobot.com,FALSE,FALSE
+exxbw,EXX&BW,https://xbtc.exx.com,FALSE,FALSE
+f2pool,F2pool,https://www.f2pool.com/,TRUE,FALSE
+foundryusa,Foundry USA Pool,https://foundrydigital.com,FALSE,FALSE
+futurebitapollosolo,FutureBit Apollo Solo,https://www.futurebit.io,FALSE,FALSE
+gbminers,GBMiners,https://gbminers.com,FALSE,FALSE
+ghashio,GHash.IO,https://ghash.io,FALSE,FALSE
+givemecoins,Give Me Coins,https://give-me-coins.com,FALSE,FALSE
+gogreenlight,GoGreenLight,https://www.gogreenlight.se,FALSE,FALSE
+haobtc,HaoBTC,,FALSE,FALSE
+haominer,haominer,https://haominer.com,FALSE,FALSE
+haozhuzhu,HAOZHUZHU,https://haozhuzhu.com,FALSE,FALSE
+hashbx,HashBX,https://hashbx.io,FALSE,FALSE
+hashpool,HASHPOOL,https://hashpool.com,FALSE,FALSE
+helix,Helix,,FALSE,FALSE
+hhtt,HHTT,https://hhtt.1209k.com,FALSE,FALSE
+hotpool,HotPool,https://hotpool.co,FALSE,FALSE
+hummerpool,Hummerpool,https://www.hummerpool.com,FALSE,FALSE
+huobipool,Huobi.pool,https://www.hpt.com,FALSE,FALSE
+innopolistech,Innopolis Tech,https://innopolis.tech/,FALSE,FALSE
+kanopool,KanoPool,https://kano.is,FALSE,FALSE
+kncminer,KnCMiner,https://portal.kncminer.com/pool,FALSE,FALSE
+kucoinpool,KuCoinPool,https://www.kucoin.com/mining-pool,FALSE,FALSE
+lubiancom,Lubian.com,https://www.lubian.com,FALSE,FALSE
+luckypool,luckyPool,,FALSE,FALSE
+luxor,Luxor,https://luxor.tech/mining,FALSE,TRUE
+marapool,MARA Pool,https://marapool.com,FALSE,FALSE
+maxbtc,MaxBTC,https://maxbtc.com,FALSE,FALSE
+maxipool,MaxiPool,https://maxipool.org/,FALSE,FALSE
+megabigpower,MegaBigPower,https://megabigpower.com,FALSE,FALSE
+mineapp,MineApp,https://mine.app/,FALSE,FALSE
+minerium,Minerium,https://www.minerium.com,FALSE,FALSE
+miningcity,MiningCity,https://www.miningcity.com,FALSE,FALSE
+miningdutch,Mining Dutch,https://www.mining-dutch.nl/,FALSE,FALSE
+miningkings,MiningKings,https://miningkings.com,FALSE,FALSE
+miningrigrentals,Mining Rig Rentals,https://www.miningrigrentals.com/,FALSE,FALSE
+miningsquared,Mining Squared,https://pool.bsquared.network/,FALSE,FALSE
+mmpool,mmpool,https://mmpool.org/pool,FALSE,FALSE
+mtred,Mt Red,https://mtred.com,FALSE,FALSE
+multipool,Multipool,https://www.multipool.us,FALSE,FALSE
+mybtccoinpool,myBTCcoin Pool,https://mybtccoin.com,FALSE,FALSE
+neopool,Neopool,https://neopool.com/,FALSE,FALSE
+nexious,Nexious,https://nexious.com,FALSE,FALSE
+nicehash,NiceHash,https://www.nicehash.com/,FALSE,FALSE
+nmcbit,NMCbit,https://nmcbit.com,FALSE,FALSE
+novablock,NovaBlock,https://novablock.com,FALSE,FALSE
+ocean,OCEAN,https://ocean.xyz/,FALSE,FALSE
+okexpool,OKExPool,https://www.okex.com,FALSE,FALSE
+okkong,OKKONG,https://hash.okkong.com,FALSE,FALSE
+okminer,OKMINER,https://okminer.com,FALSE,FALSE
+okpooltop,okpool.top,https://www.okpool.top,FALSE,FALSE
+ozcoin,OzCoin,https://ozcoin.net,FALSE,FALSE
+patels,Patels,https://patelsminingpool.com,FALSE,FALSE
+pegapool,PEGA Pool,https://www.pega-pool.com,FALSE,FALSE
+phashio,PHash.IO,https://phash.io,FALSE,FALSE
+phoenix,Phoenix,https://phoenixpool.com,FALSE,FALSE
+polmine,Polmine,https://polmine.pl,FALSE,FALSE
+poolbi0ce, Pool Bi0ce,https://sha256.poolbi0ce.com,FALSE,FALSE
+poolin,Poolin,https://www.poolin.com/,TRUE,TRUE
+prohashing,ProHashing,https://prohashing.com,FALSE,FALSE
+publicpool,Public Pool,https://web.public-pool.io/,FALSE,FALSE
+rawpool,Rawpool,https://www.rawpool.com,FALSE,TRUE
+rigpool,RigPool,https://www.rigpool.com,FALSE,FALSE
+sbicrypto,SBI Crypto,https://sbicrypto.com,FALSE,FALSE
+secpool,SECPOOL,https://www.secpool.com,TRUE,FALSE
+secretsuperstar,SecretSuperstar,,FALSE,FALSE
+shawnp0wers,shawnp0wers,https://www.brainofshawn.com,FALSE,FALSE
+sigmapoolcom,Sigmapool.com,https://sigmapool.com,FALSE,FALSE
+simplecoinus,simplecoin.us,https://simplecoin.us,FALSE,FALSE
+solock,Solo CK,https://solo.ckpool.org,FALSE,FALSE
+spiderpool,SpiderPool,https://www.spiderpool.com,FALSE,FALSE
+stminingcorp,ST Mining Corp,https://bitcointalk.org/index.php?topic=77000.msg3207708#msg3207708,FALSE,FALSE
+tangpool,Tangpool,https://www.tangpool.com,FALSE,FALSE
+tatmaspool,TATMAS Pool,https://tmsminer.com,FALSE,FALSE
+tbdice,TBDice,https://tbdice.org,FALSE,FALSE
+telco214,Telco 214,https://www.telco214.com,FALSE,FALSE
+terrapool,Terra Pool,https://terrapool.io,FALSE,FALSE
+tiger,tiger,,FALSE,FALSE
+tigerpoolnet,tigerpool.net,,FALSE,FALSE
+titan,Titan,https://titan.io,FALSE,FALSE
+transactioncoinmining,transactioncoinmining,https://sha256.transactioncoinmining.com,FALSE,FALSE
+trickysbtcpool,Tricky's BTC Pool,https://pool.wemine.uk,FALSE,FALSE
+triplemining,TripleMining,https://www.triplemining.com,FALSE,FALSE
+ultimuspool,Ultimuspool,https://www.ultimuspool.com/,TRUE,TRUE
+unknown,Unknown,,FALSE,FALSE
+unomp,UNOMP,https://199.115.116.7:8925,FALSE,FALSE
+viabtc,ViaBTC,https://viabtc.com,FALSE,FALSE
+waterhole,Waterhole,https://btc.waterhole.io,FALSE,FALSE
+wayicn,WAYI.CN,https://www.easy2mine.com,FALSE,FALSE
+whitepool,WhitePool,https://whitebit.com/mining-pool,FALSE,FALSE
+wk057,wk057,,FALSE,FALSE
+yourbtcnet,Yourbtc.net,https://yourbtc.net,FALSE,FALSE
+zulupool,Zulupool,https://beta.zulupool.com/,FALSE,FALSE
