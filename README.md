@@ -3,7 +3,8 @@
 ## Bitcoin Plus Plus Demo 2025
 
 # Source Data
-- Bitcoin block data was sourced from a Bitcoin Core node (via Mempool Space's API): [https://mempool.space/docs/api/rest#get-blocks-bulk](https://mempool.space/docs/api/rest#get-blocks-bulk). *NOTE*: The bulk blocks endpoint is not enabled on the public site, it can be enabled on a self-hosted instance through the API config.
+- To reduce file sizes, all source data has been limited to calendar year 2024, plus one month prior (Dec 2023) and one month after (Jan 2025), in case any look back or forward is needed.
+- Bitcoin block data was sourced from a Bitcoin Core node (via Mempool Space's API): [https://mempool.space/docs/api/rest#get-blocks-bulk](https://mempool.space/docs/api/rest#get-blocks-bulk). **NOTE**: The bulk blocks endpoint is not enabled on the public site, it can be enabled on a self-hosted instance through the API config.
 - Mining pool data was sourced from Mempool Space's open source repository of mining pools: [https://github.com/mempool/mining-pools/blob/master/pools-v2.json](https://github.com/mempool/mining-pools/blob/master/pools-v2.json)
 - Bitcoin spot price data was sourced from Coinmetrics community (free tier) API: [https://docs.coinmetrics.io/api/v4/](https://docs.coinmetrics.io/api/v4/).
 
@@ -63,7 +64,7 @@ Create a pool dimension model with a formatted display name and url, as well as 
 ---
 
 ## FACT Block
-Create a Bitcoin block fact model with the `blockheight`, `timestamp`, and numerical data such as `block_size`, `reward_subsidy`. *NOTE*: if you are dealing with transaction-level data, it may make sense to also have a Bitcoin block dimension model to contain the categorical data, and keep the numeric data in the fact model. Here, we are just creating a fact, and including categorical attributes such as `block_hash` directly (this practice is commonly referred to as a 'degenerate dimension').
+Create a Bitcoin block fact model with the `blockheight`, `timestamp`, and numerical data such as `block_size`, `reward_subsidy`. **NOTE**: if you are dealing with transaction-level data, it may make sense to also have a Bitcoin block dimension model to contain the categorical data, and keep the numeric data in the fact model. Here, we are just creating a fact, and including categorical attributes such as `block_hash` directly (this practice is commonly referred to as a 'degenerate dimension').
 
 ### Data Granularity
 - `block_hash`
@@ -107,7 +108,7 @@ Create a daily network stats OBT model combines attributes from the network stat
 - `date_id`
 
 ## OBT Pool Stats 1d
-Create a daily pool stats OBT model combines attributes from the pool stats 1d fact model, and the date and pool dimension models.
+Create a daily pool stats OBT model combines attributes from the network stats 1d and pool stats 1d fact models, and the date and pool dimension models.
 
 ### Data Granularity
 - `date_id`
@@ -117,5 +118,5 @@ Create a daily pool stats OBT model combines attributes from the pool stats 1d f
 
 # Next Steps
 Below are some ideas for additional models that could be built without requiring any additional source data:
-- A fact model which contains one row per difficulty or subsidy epoch, with aggregate metrics about the entire epoch.
+- An OBT model which contains one row per difficulty or subsidy epoch, with aggregate metrics pertaining to each epoch.
 - An OBT model which contains one row per mining pool, and aggregates all time metrics pertaining to each pool.
