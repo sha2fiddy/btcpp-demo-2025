@@ -50,6 +50,8 @@ For the purpose of the workshop, we will be creating models by running SQL direc
 
 Example SQL is given in the /models/ directory as a starting point. In the workshape we will materialize DIM and FACT models as tables, and OBT models as views. In a production environment, it is also recommended to add unique key constraints, column indexes, and other common database optimizations.
 
+**NOTE**: The sample data provided was already pre-cleaned and validated. One notable callout with the Bitcoin block data is to build in checks for stale blocks (using `blockheight`, `block_hash` and `prev_block_hash`), left out here for simplicity.
+
 ## DIM Date
 The date dimension model is part of the initial migrations and will be built automatically. This model contains one row per calendar date, with many helpful columns that can be used for analysis (e.g. `day_of_week`, `month_start_date`). This is a unique model where the primary surrogate key (`date_id`), a stringified date formatted as 'yyyymmdd'.
 
@@ -134,11 +136,11 @@ Create a daily pool stats OBT model combines attributes from the pool stats, net
 ---
 
 # Next Steps
-Below are some ideas for additional models that could be built without requiring any additional source data:
+## Additional Model Ideas (without existing sample data)
 - An OBT model which contains one row per difficulty or subsidy epoch, with aggregate metrics pertaining to each epoch.
 - An OBT model which contains one row per mining pool, and aggregates all time metrics pertaining to each pool.
 - An OBT model which contains more sophisticated statistical modeling around mining 'luck' (aka variability).
 
-Below are some other data sources which could be added to enable other model types:
+## Additional Data Source Ideas
 - Bitcoin transaction or address balance data (this is where the Bitcoin block dimension table is needed).
 - Power consumption or price data from ERCOT or other power utilities.
