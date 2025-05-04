@@ -1,6 +1,8 @@
-set search_path to src;
+set search_path to src
+;
 
-drop table if exists block;
+drop table if exists block
+;
 
 create table block (
       blockheight int not null
@@ -28,4 +30,5 @@ copy block (
 
 from '/data/block.csv'
 delimiter ','
-csv header;
+csv header
+;

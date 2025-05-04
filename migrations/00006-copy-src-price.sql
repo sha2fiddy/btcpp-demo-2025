@@ -1,6 +1,8 @@
-set search_path to src;
+set search_path to src
+;
 
-drop table if exists price;
+drop table if exists price
+;
 
 create table price (
       date date not null
@@ -22,4 +24,5 @@ copy price (
 
 from '/data/price.csv'
 delimiter ','
-csv header;
+csv header
+;

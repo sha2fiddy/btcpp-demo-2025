@@ -1,6 +1,8 @@
-set search_path to src;
+set search_path to src
+;
 
-drop table if exists pool;
+drop table if exists pool
+;
 
 create table pool (
       pool_key text not null
@@ -20,4 +22,5 @@ copy pool (
 
 from '/data/pool.csv'
 delimiter ','
-csv header;
+csv header
+;

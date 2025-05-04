@@ -1,6 +1,8 @@
-set search_path to src;
+set search_path to src
+;
 
-drop table if exists hashrate;
+drop table if exists hashrate
+;
 
 create table hashrate (
       date date not null
@@ -16,4 +18,5 @@ copy hashrate (
 
 from '/data/hashrate.csv'
 delimiter ','
-csv header;
+csv header
+;
