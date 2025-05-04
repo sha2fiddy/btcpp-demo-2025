@@ -51,7 +51,6 @@ inner join dim.pool as dp
 
 );
 
-
 select *
 from obt.block
 order by blockheight
