@@ -33,6 +33,7 @@ with src_block as (
 		, current_timestamp as audit_created_timestamp
 	from src.block
 	where trim(block_hash) is not null
+	-- Typically fact tables would build incrementally on some schedule, and a date filter would be applied accordingly
 )
 
 -- Remove any duplicate data that could exist in src layer
@@ -131,6 +132,7 @@ with src_block as (
 		on dd.date = a.event_date
 )
 
+-- Specify final data types, add derived cols
 , standardize as (
 	select
 		  date_id::varchar(512) as date_id

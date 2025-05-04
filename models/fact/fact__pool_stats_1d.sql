@@ -33,6 +33,7 @@ with src_block as (
 		, current_timestamp as audit_created_timestamp
 	from src.block
 	where trim(block_hash::varchar) is not null
+	-- Typically fact tables would build incrementally on some schedule, and a date filter would be applied accordingly
 )
 
 -- Best practice is to deduplicate records based on some metadata/audit timestamp
@@ -176,6 +177,7 @@ with src_block as (
 		on dp.pool_key = a.pool_key
 )
 
+-- Specify final data types, add derived cols
 , standardize as (
 	select
 		  date_id::varchar(512) as date_id
