@@ -143,6 +143,28 @@ with src_block as (
 		, blockheight_first::int as blockheight_first
 		, blockheight_last::int as blockheight_last
 		, pool_count::int as pool_count
+		-- Estimate network hashrate as block count * difficulty * 2^32 / seconds in a day
+		, (case
+			when block_count = 0 then 0
+			else block_count::decimal * difficulty_weighted_avg::decimal
+				* pow(2, 32)::decimal / 86400::decimal
+		end)::decimal(30, 0) as est_hashrate
+		-- Add common hashrate scales
+		, (case
+			when block_count = 0 then 0
+			else block_count::decimal * difficulty_weighted_avg::decimal
+				* pow(2, 32)::decimal / 86400::decimal / pow(10, 12)::decimal
+		end)::decimal(30, 12) as est_hashrate_th
+		, (case
+			when block_count = 0 then 0
+			else block_count::decimal * difficulty_weighted_avg::decimal
+				* pow(2, 32)::decimal / 86400::decimal / pow(10, 15)::decimal
+		end)::decimal(30, 15) as est_hashrate_ph
+		, (case
+			when block_count = 0 then 0
+			else block_count::decimal * difficulty_weighted_avg::decimal
+				* pow(2, 32)::decimal / 86400::decimal / pow(10, 18)::decimal
+		end)::decimal(30, 18) as est_hashrate_eh
 		, (reward_subsidy + reward_tx_fee_sum)::bigint as reward_mining
 		, reward_subsidy::bigint as reward_subsidy
 		, reward_tx_fee_sum::bigint as reward_tx_fee_sum
