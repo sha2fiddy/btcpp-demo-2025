@@ -14,10 +14,10 @@ with src_pool as (
 		-- Create a dummy timestamp for deduplication (ideally there is a real audit timestamp from src data)
 		, current_timestamp as audit_created_timestamp
 	from src.pool
-	where trim(pool_key) is not null
+	where trim(pool_key::varchar) is not null
 )
 
--- Remove any duplicate data that could exist in src layer
+-- Best practice is to deduplicate records based on some metadata/audit timestamp
 , deduplicate as (
 	select *
 	from (
@@ -31,10 +31,11 @@ with src_pool as (
 			) as dedupe_rn
 		from src_pool
 	)
+	-- Postgres does not allow you to `qualify` a row number without actually selecting it (so we can't select *)
 	where dedupe_rn = 1
 )
 
--- Specify final data types, derived cols, create surrogate id for dim table
+-- Specify final data types, add derived cols, create surrogate id for dim table
 , standardize as (
 	select
 		-- Another good place for a dbt macro

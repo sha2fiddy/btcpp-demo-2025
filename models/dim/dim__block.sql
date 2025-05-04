@@ -14,10 +14,10 @@ with src_block as (
 		-- Create a dummy timestamp for deduplication (ideally there is a real audit timestamp from src data)
 		, current_timestamp as audit_created_timestamp
 	from src.block
-	where trim(block_hash) is not null
+	where trim(block_hash::varchar) is not null
 )
 
--- Remove any duplicate data that could exist in src layer
+-- Best practice is to deduplicate records based on some metadata/audit timestamp
 , deduplicate as (
 	select *
 	from (
@@ -34,7 +34,7 @@ with src_block as (
 	where dedupe_rn = 1
 )
 
--- Specify final data types, derived cols, create surrogate id for dim table
+-- Specify final data types, add derived cols, create surrogate id for dim table
 , standardize as (
 	select
 		-- Create a surrogate key for dim table (a stored proc or dbt macro could be used)

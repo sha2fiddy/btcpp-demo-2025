@@ -8,7 +8,7 @@ create table block (
     , prev_block_hash text not null
     , timestamp timestamp not null
     , pool_key text
-    , difficulty numeric(30, 7)
+    , difficulty decimal(30, 7)
     , reward_subsidy bigint
     , reward_tx_fee_sum bigint
     , tx_count int

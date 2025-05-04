@@ -1,0 +1,180 @@
+drop table if exists fact.pool_stats_1d
+;
+
+create table fact.pool_stats_1d as (
+
+with src_block as (
+	select distinct
+		-- Apply some basic data cleaning to string fields (good place to use a dbt macro)
+		-- For standardization across models, select block hash as the natural key
+		  trim(block_hash::varchar) as block_key
+		, blockheight::int as blockheight
+		, timestamp::date as event_date
+		, timestamp::timestamp as event_timestamp
+		, trim(pool_key::varchar) as pool_key
+		-- Create flags for subsidy halvings and difficulty adjustments (derived here to avoid verbose transformations)
+		, (case
+			when round(blockheight::decimal / 210000::decimal, 9)
+				= floor(blockheight::decimal / 210000::decimal)
+			then true
+			else false
+		end)::boolean as is_subsidy_halving
+		, (case
+			when round(blockheight::decimal / 2016::decimal, 9)
+				= floor(blockheight::decimal / 2016::decimal)
+			then true
+			else false
+		end)::boolean as is_difficulty_adjustment
+		, difficulty::decimal(30, 9) as difficulty
+		, reward_subsidy::bigint as reward_subsidy
+		, reward_tx_fee_sum::bigint as reward_tx_fee_sum
+		, tx_count::int as tx_count
+		-- Create a dummy timestamp for deduplication (ideally there is a real audit timestamp from src data)
+		, current_timestamp as audit_created_timestamp
+	from src.block
+	where trim(block_hash::varchar) is not null
+)
+
+-- Best practice is to deduplicate records based on some metadata/audit timestamp
+, deduplicate_block as (
+	select *
+	from (
+		select
+			  *
+			, row_number() over (
+				-- The partition defines the data granularity (unique natural key or keys)
+				partition by block_key
+				-- Best practice is to deduplicate records based on an actual metadata/audit timestamp
+				order by audit_created_timestamp desc
+			) as dedupe_rn
+		from src_block
+	)
+	-- Postgres does not allow you to `qualify` a row number without actually selecting it (so we can't select *)
+	where dedupe_rn = 1
+)
+
+, src_hashrate as (
+	select distinct
+		  date::date as event_date
+		, trim(pool_key::varchar) as pool_key
+		-- Label this hashrate as reported (vs estimated)
+		, hashrate::decimal(30, 0) as reported_hashrate
+		, current_timestamp as audit_created_timestamp
+	from src.hashrate
+	where trim(pool_key::varchar) is not null
+)
+
+, deduplicate_hashrate as (
+	select *
+	from (
+		select
+			  *
+			, row_number() over (
+				partition by event_date, pool_key
+				order by audit_created_timestamp desc
+			) as dedupe_rn
+		from src_hashrate
+	)
+	where dedupe_rn = 1
+)
+
+, aggregate as (
+	select
+		  event_date
+		, pool_key
+		-- If any block has a halving or difficulty adjustment return true, else false
+		, bool_or(is_subsidy_halving) as has_subsidy_halving
+		, bool_or(is_difficulty_adjustment) as has_difficulty_adjustment
+		, count(distinct block_key) as block_count
+		, min(blockheight) as blockheight_first
+		, max(blockheight) as blockheight_last
+		, sum(reward_subsidy) as reward_subsidy_sum
+		, sum(reward_tx_fee_sum) as reward_tx_fee_sum
+		, sum(tx_count) as tx_count
+		, max(audit_created_timestamp) as audit_created_timestamp
+	from deduplicate_block
+	group by event_date, pool_key
+)
+
+, handle_difficulty_adjustments as (
+	select
+		  a.event_date
+		, d1.difficulty as difficulty_first
+		, d2.difficulty as difficulty_last
+		-- Derive a blended difficulty level, weighted by time spent at each level during the day
+	  	, ((da.difficulty_first::decimal * da.duration_first_sec::decimal / 86400::decimal)
+			+ (da.difficulty_last::decimal * da.duration_last_sec::decimal / 86400::decimal)
+			)::decimal(30, 9) as difficulty_weighted_avg
+	from aggregate as a
+	-- Join to first & last block on each date for difficulty of the last block
+	inner join deduplicate_block as d1
+		on d1.blockheight = a.blockheight_first
+	inner join deduplicate_block as d2
+		on d2.blockheight = a.blockheight_last
+	-- Join to difficulty adjustment days for special handling
+	left join (
+		select
+			  a.event_date
+			, d1.difficulty as difficulty_first
+			, d2.difficulty as difficulty_last
+			-- Calculate seconds spent at each difficulty level on adjustment date
+			, abs(extract(epoch from d2.event_timestamp - a.event_date)) as duration_first_sec
+			, abs(extract(epoch from a.event_date + interval '1 day' - d2.event_timestamp)) as duration_last_sec
+		from aggregate as a
+		-- Join to the first block of each date and the difficulty adjustment block
+		inner join deduplicate_block as d1
+			on d1.blockheight = a.blockheight_first
+		inner join deduplicate_block as d2
+			on d2.event_date = a.event_date
+		where a.has_difficulty_adjustment = true
+		and d2.is_difficulty_adjustment = true
+	) as da
+		on da.event_date = a.event_date
+)
+
+, relations as (
+	select
+		  dd.date_id
+		-- If no match was found in dim tables, use the default/unknown row (this enables inner joins downstream)
+		, coalesce(dp.pool_id, '0') as pool_id
+		, a.has_subsidy_halving
+		, a.has_difficulty_adjustment
+		, hd.difficulty_first
+		, hd.difficulty_last
+		-- If no adjustment occured, fill the weighted avg with the consistent difficulty for those days
+		, coalesce(hd.difficulty_weighted_avg, hd.difficulty_first) as difficulty_weighted_avg
+		, h.reported_hashrate
+		, a.block_count
+		, a.blockheight_first
+		, a.blockheight_last
+		, a.reward_subsidy_sum
+		, a.reward_tx_fee_sum
+		, a.tx_count
+		, a.audit_created_timestamp
+	from aggregate as a
+	inner join handle_difficulty_adjustments as hd
+		on hd.event_date = a.event_date
+	left join deduplicate_hashrate as h
+		on h.event_date = a.event_date
+	inner join dim.date as dd
+		on dd.date = a.event_date
+	-- Left join dims (other than date) in case no match is found
+	left join dim.pool as dp
+		on dp.pool_key = a.pool_key
+)
+
+, standardize as (
+	select *
+	from relations
+)
+
+select *
+from standardize
+
+);
+
+select *
+from fact.pool_stats_1d
+order by date_id, block_count desc
+limit 1000
+;

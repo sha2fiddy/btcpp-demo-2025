@@ -6,11 +6,11 @@ create table fact.network_stats_1d as (
 with src_block as (
 	select distinct
 		-- Apply some basic data cleaning to string fields (good place to use a dbt macro)
-		-- For standardization across models, select block hash again as the natural key
+		-- For standardization across models, select block hash as the natural key
 		  trim(block_hash::varchar) as block_key
 		, blockheight::int as blockheight
 		, timestamp::date as event_date
-	  	, timestamp::timestamp as event_timestamp
+		, timestamp::timestamp as event_timestamp
 		, trim(pool_key::varchar) as pool_key
 		-- Create flags for subsidy halvings and difficulty adjustments (derived here to avoid verbose transformations)
 		, (case
@@ -63,7 +63,7 @@ with src_block as (
 		, min(blockheight) as blockheight_first
 		, max(blockheight) as blockheight_last
 		, count(distinct pool_key) as pool_count
-		, sum(reward_subsidy) as reward_subsidy
+		, sum(reward_subsidy) as reward_subsidy_sum
 		, sum(reward_tx_fee_sum) as reward_tx_fee_sum
 		, sum(tx_count) as tx_count
 		, max(audit_created_timestamp) as audit_created_timestamp
@@ -120,7 +120,7 @@ with src_block as (
 		, a.blockheight_first
 		, a.blockheight_last
 		, a.pool_count
-		, a.reward_subsidy
+		, a.reward_subsidy_sum
 		, a.reward_tx_fee_sum
 		, a.tx_count
 		, a.audit_created_timestamp
@@ -165,17 +165,17 @@ with src_block as (
 			else block_count::decimal * difficulty_weighted_avg::decimal
 				* pow(2, 32)::decimal / 86400::decimal / pow(10, 18)::decimal
 		end)::decimal(30, 18) as est_hashrate_eh
-		, (reward_subsidy + reward_tx_fee_sum)::bigint as reward_mining
-		, reward_subsidy::bigint as reward_subsidy
+		, (reward_subsidy_sum + reward_tx_fee_sum)::bigint as reward_mining
+		, reward_subsidy_sum::bigint as reward_subsidy_sum
 		, reward_tx_fee_sum::bigint as reward_tx_fee_sum
 		, tx_count::int as tx_count
 		-- Add BTC scale numbers (vs Sats scale)
-		, (100 * reward_tx_fee_sum::decimal / (reward_subsidy + reward_tx_fee_sum)::decimal
+		, (100 * reward_tx_fee_sum::decimal / (reward_subsidy_sum + reward_tx_fee_sum)::decimal
 			)::decimal(12, 9) as reward_tx_fee_pct
-		, ((reward_subsidy + reward_tx_fee_sum)::decimal / pow(10, 8)::decimal
+		, ((reward_subsidy_sum + reward_tx_fee_sum)::decimal / pow(10, 8)::decimal
 			)::decimal(16, 8) as reward_mining_btc
-		, (reward_subsidy::decimal / pow(10, 8)::decimal
-			)::decimal(16, 8) as reward_subsidy_btc
+		, (reward_subsidy_sum::decimal / pow(10, 8)::decimal
+			)::decimal(16, 8) as reward_subsidy_sum_btc
 		, (reward_tx_fee_sum::decimal / pow(10, 8)::decimal
 			)::decimal(16, 8) as reward_tx_fee_sum_btc
 		, (reward_tx_fee_sum::decimal / tx_count::decimal)::decimal(16, 3) as tx_fee_avg

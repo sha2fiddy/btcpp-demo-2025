@@ -9,6 +9,7 @@ with src_block as (
 		-- For standardization across models, select block hash again as the natural key
 		  trim(block_hash::varchar) as block_key
 		, blockheight::int as blockheight
+		, timestamp::date as event_date
 	  	, timestamp::timestamp as event_timestamp
 		, trim(pool_key::varchar) as pool_key
 		, difficulty::decimal(30, 9) as difficulty
@@ -21,7 +22,7 @@ with src_block as (
 	where trim(block_hash::varchar) is not null
 )
 
--- Remove any duplicate data that could exist in src layer
+-- Best practice is to deduplicate records based on some metadata/audit timestamp
 , deduplicate as (
 	select *
 	from (
@@ -35,6 +36,7 @@ with src_block as (
 			) as dedupe_rn
 		from src_block
 	)
+	-- Postgres does not allow you to `qualify` a row number without actually selecting it (so we can't select *)
 	where dedupe_rn = 1
 )
 
@@ -58,7 +60,7 @@ with src_block as (
 , relations as (
 	select
 		  dd.date_id
-		-- If no match was found in dim tables, use the default/unknown row (this ensures inner joins downstream)
+		-- If no match was found in dim tables, use the default/unknown row (this enables inner joins downstream)
 		, coalesce(db.block_id, '0') as block_id
 		, coalesce(dp.pool_id, '0') as pool_id
 		, d.blockheight
@@ -75,8 +77,8 @@ with src_block as (
 	inner join derive_epochs as e
 		on e.block_key = d.block_key
 	inner join dim.date as dd
-		on dd.date = d.event_timestamp::date
-	-- Left join dims (other than date)
+		on dd.date = d.event_date
+	-- Left join dims (other than date) in case no match is found
 	left join dim.block as db
 		on db.block_key = d.block_key
 	left join dim.pool as dp
@@ -93,7 +95,6 @@ with src_block as (
 		, event_timestamp::timestamp as event_timestamp
 		, subsidy_epoch::int as subsidy_epoch
 		, subsidy_level::bigint as subsidy_level
-		-- Add BTC scale numbers (vs Sats scale)
 		, (subsidy_level::decimal / pow(10, 8)::decimal)::decimal(16, 8) as subsidy_level_btc
 		, difficulty_epoch::int as difficulty_epoch
 		, difficulty::decimal(30, 9) as difficulty
@@ -102,6 +103,7 @@ with src_block as (
 		, reward_tx_fee_sum::bigint as reward_tx_fee_sum
 		, (100 * reward_tx_fee_sum::decimal / (reward_subsidy + reward_tx_fee_sum)::decimal
 			)::decimal(12, 9) as reward_tx_fee_pct
+		-- Add BTC scale numbers (vs Sats scale)
 		, ((reward_subsidy + reward_tx_fee_sum)::decimal / pow(10, 8)::decimal
 			)::decimal(16, 8) as reward_mining_btc
 		, (reward_subsidy::decimal / pow(10, 8)::decimal

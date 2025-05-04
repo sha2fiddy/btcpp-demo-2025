@@ -5,7 +5,7 @@ drop table if exists hashrate;
 create table hashrate (
       date date not null
     , pool_key text not null
-    , hashrate numeric(30, 0)
+    , hashrate decimal(30, 0)
 );
 
 copy hashrate (
