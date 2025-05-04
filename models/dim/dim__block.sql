@@ -17,7 +17,7 @@ with src_block as (
 	where trim(block_hash) is not null
 )
 
--- Best practice is to deduplicate records based on some metadata/audit timestamp
+-- Remove any duplicate data that could exist in src layer
 , deduplicate as (
 	select *
 	from (

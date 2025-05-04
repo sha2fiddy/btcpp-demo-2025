@@ -17,7 +17,7 @@ with src_pool as (
 	where trim(pool_key) is not null
 )
 
--- Best practice is to deduplicate records based on some metadata/audit timestamp
+-- Remove any duplicate data that could exist in src layer
 , deduplicate as (
 	select *
 	from (
@@ -31,7 +31,6 @@ with src_pool as (
 			) as dedupe_rn
 		from src_pool
 	)
-	-- Postgres does not allow you to `qualify` a row number without actually selecting it (so we can't select *)
 	where dedupe_rn = 1
 )
 
