@@ -6,7 +6,7 @@ create view obt.network_stats_1d as (
 with combined_data as (
     -- Using a logical column order will help consumers
     select
-        dd.date_id
+          dd.date_id
         , dd.date as event_date
         -- Adding every col from dim date is probably not needed in most cases
         , dd.day_of_week

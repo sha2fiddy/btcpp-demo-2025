@@ -7,6 +7,7 @@
 - Bitcoin block data was sourced from a Bitcoin Core node (via Mempool Space's API): [https://mempool.space/docs/api/rest#get-blocks-bulk](https://mempool.space/docs/api/rest#get-blocks-bulk). **NOTE**: The bulk blocks endpoint is not enabled on the public site, it can be enabled on a self-hosted instance through the API config.
 - Mining pool data was sourced from Mempool Space's open source repository of mining pools: [https://github.com/mempool/mining-pools/blob/master/pools-v2.json](https://github.com/mempool/mining-pools/blob/master/pools-v2.json)
 - Bitcoin spot price data was sourced from Coinmetrics community (free tier) API: [https://docs.coinmetrics.io/api/v4/](https://docs.coinmetrics.io/api/v4/).
+- Pool hashrate data was obtained from mining pools who provide this data freely, without needing API keys.
 
 # Setup Instricutions
 
@@ -50,10 +51,16 @@ For the purpose of the workshop, we will be creating models by running SQL direc
 Example SQL is given in the /models/ directory as a starting point. In the workshape we will materialize DIM and FACT models as tables, and OBT models as views. In a production environment, it is also recommended to add unique key constraints, column indexes, and other common database optimizations.
 
 ## DIM Date
-The date dimension model is part of the initial migrations and will be built automatically. This model contains one row per calendar date, with many helpful columns that can be used for analysis (e.g. `day_of_week`, `month_start_date`). The primary surrogate key of the date dimension is `date_id`, a stringified date formatted as 'yyyymmdd'.
+The date dimension model is part of the initial migrations and will be built automatically. This model contains one row per calendar date, with many helpful columns that can be used for analysis (e.g. `day_of_week`, `month_start_date`). This is a unique model where the primary surrogate key (`date_id`), a stringified date formatted as 'yyyymmdd'.
 
 ### Data Granularity
 - `date_id`
+
+## DIM Pool
+Create a pool dimension model with a formatted display name and url, as well as categorical flags which are helpful for analaysis, such as `is_antpool_friend`.
+
+### Data Granularity
+- `pool_id`
 
 ## DIM Block
 Create a Bitcoin block dimension model to hold any categorical data pertaining to each block, such as `block_hash`, `prev_block_hash`.
@@ -61,60 +68,64 @@ Create a Bitcoin block dimension model to hold any categorical data pertaining t
 ### Data Granularity
 - `block_id`
 
-## DIM Pool
-Create a pool dimension model with a formatted display name and url, as well as flags which are helpful for analaysis, such as `is_antpool_friend`.
-
-### Data Granularity
-- `pool_id`
-
 ---
 
 ## FACT Block
-Create a Bitcoin block fact model with the `blockheight`, `timestamp`, and numerical data such as `block_size`, `reward_subsidy`. **NOTE**: if guarenteed to never have lower than block-level data (IE no transaction-level data), it is possible to include attributes from the Bitcoin block dimension model directly in this fact.  This practice is commonly referred to as a 'degenerate dimension'.
+Create a Bitcoin block fact model with the `blockheight`, `timestamp`, and numerical data such as `block_size`, `reward_subsidy`. **NOTE**: if lower granularity than block-level data is never needed (IE no transaction-level data), it is possible to include all attributes from the Bitcoin block dimension model directly in this fact.  This practice is commonly referred to as a 'degenerate dimension'.
 
 ### Data Granularity
 - `block_id`
 
 ### Foreign Key Relationships
-- `date_id`
-- `pool_id`
+- `dim.block.block_id`
+- `dim.date.date_id`
+- `dim.pool.pool_id`
 
 ## FACT Network Stats 1d
-Create a daily network stats model including `block_count`, `difficulty_weighted_avg` (a blended difficulty to account for adjustments), and `est_hashrate` (the estimated total network hashrate).
+Create a daily network stats fact model including `block_count`, `difficulty_weighted_avg` (a blended difficulty to account for adjustments), and `est_hashrate` (the estimated total network hashrate).
 
 ### Data Granularity
 - `date_id`
 
 ### Foreign Key Relationships
-- `date_id`
+- `dim.date.date_id`
 
 ## FACT Pool Stats 1d
-Create a daily pool stats model including `block_count`, `hashrate` (the reported pool hashrate), and `est_hashrate` (the estimated pool hashrate, if reported hashrate is unavailable).
+Create a daily pool stats fact model including `block_count`, `reported_hashrate` (for those pools who provide it).
 
 ### Data Granularity
 - `date_id`
 - `pool_id`
 
 ### Foreign Key Relationships
+- `dim.date.date_id`
+- `dim.pool.pool_id`
+
+## FACT Price 1d
+Create a daily Bitcoin price fact model including `price_open`, `price_close`, and deriving `price_change`, `price_spread`, etc. **NOTE**: For simplicity, this only contains BTC-USD price data. If other coins or tickers are involved, a coin dimension table should also be built.
+
+### Data Granularity
 - `date_id`
-- `pool_id`
+
+### Foreign Key Relationships
+- `dim.date.date_id`
 
 ---
 
 ## OBT Block
-Create a Bitcoin block OBT model combines attributes from the Bitcoin block fact model, and the date and pool dimension tables.
+Create a Bitcoin block OBT model which combines attributes from the Bitcoin block fact model, and the Bitcoin block, date, and pool dimension tables.
 
 ### Data Granularity
-- `block_hash`
+- `block_id`
 
 ## OBT Network Stats 1d
-Create a daily network stats OBT model combines attributes from the network stats 1d fact model, and the date dimension model.
+Create a daily network stats OBT model combines attributes from the daily network stats and price fact models, and the date dimension model. By joining the network stats and price fact models, USD amounts can be derived (including hashprice).
 
 ### Data Granularity
 - `date_id`
 
 ## OBT Pool Stats 1d
-Create a daily pool stats OBT model combines attributes from the network stats 1d and pool stats 1d fact models, and the date and pool dimension models.
+Create a daily pool stats OBT model combines attributes from the pool stats, network stats, and price fact models, and the date and pool dimension models. By joining pool and network stats models, percent of network totals, expected block count, and mining luck (for those who provide reported hashrate) can be derived.
 
 ### Data Granularity
 - `date_id`
@@ -126,3 +137,8 @@ Create a daily pool stats OBT model combines attributes from the network stats 1
 Below are some ideas for additional models that could be built without requiring any additional source data:
 - An OBT model which contains one row per difficulty or subsidy epoch, with aggregate metrics pertaining to each epoch.
 - An OBT model which contains one row per mining pool, and aggregates all time metrics pertaining to each pool.
+- An OBT model which contains more sophisticated statistical modeling around mining 'luck' (aka variability).
+
+Below are some other data sources which could be added to enable other model types:
+- Bitcoin transaction or address balance data (this is where the Bitcoin block dimension table is needed).
+- Power consumption or price data from ERCOT or other power utilities.
