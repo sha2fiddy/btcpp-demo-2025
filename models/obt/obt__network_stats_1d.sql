@@ -1,4 +1,4 @@
-drop view if exists obt.network_stats_1d
+drop view if exists obt.network_stats_1d cascade
 ;
 
 create view obt.network_stats_1d as (
@@ -24,12 +24,12 @@ select
 	, fn.est_hashrate_th
 	, fn.est_hashrate_ph
 	, fn.est_hashrate_eh
-	, fn.reward_mining
+	, fn.reward_mining_sum
 	, fn.reward_subsidy_sum
 	, fn.reward_tx_fee_sum
 	, fn.tx_count
 	, fn.reward_tx_fee_pct
-	, fn.reward_mining_btc
+	, fn.reward_mining_sum_btc
 	, fn.reward_subsidy_sum_btc
 	, fn.reward_tx_fee_sum_btc
 	, fn.tx_fee_avg

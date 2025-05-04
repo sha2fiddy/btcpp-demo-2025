@@ -1,4 +1,4 @@
-drop table if exists dim.block
+drop table if exists dim.block cascade
 ;
 
 create table dim.block as (

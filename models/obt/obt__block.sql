@@ -1,5 +1,5 @@
 -- OBTs could be tables or materialized views if performance is an issue
-drop view if exists obt.block
+drop view if exists obt.block cascade
 ;
 
 create view obt.block as (

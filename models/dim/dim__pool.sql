@@ -1,4 +1,4 @@
-drop table if exists dim.pool
+drop table if exists dim.pool cascade
 ;
 
 create table dim.pool as (

@@ -1,4 +1,4 @@
-drop table if exists fact.block
+drop table if exists fact.block cascade
 ;
 
 create table fact.block as (
@@ -20,7 +20,7 @@ with src_block as (
 		, current_timestamp as audit_created_timestamp
 	from src.block
 	where trim(block_hash::varchar) is not null
-    -- Typically fact tables would build incrementally on some schedule, and a date filter would be applied accordingly
+	-- Typically fact tables would build incrementally on some schedule, and a date filter would be applied accordingly
 )
 
 -- Best practice is to deduplicate records based on some metadata/audit timestamp

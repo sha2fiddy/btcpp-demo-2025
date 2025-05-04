@@ -1,4 +1,4 @@
-drop table if exists fact.pool_stats_1d
+drop table if exists fact.pool_stats_1d cascade
 ;
 
 create table fact.pool_stats_1d as (
@@ -217,6 +217,7 @@ with src_block as (
 		, block_count::int as block_count
 		, blockheight_first::int as blockheight_first
 		, blockheight_last::int as blockheight_last
+		, (reward_subsidy_sum + reward_tx_fee_sum)::bigint as reward_mining_sum
 		, reward_subsidy_sum::bigint as reward_subsidy_sum
 		, reward_tx_fee_sum::bigint as reward_tx_fee_sum
 		, tx_count::int as tx_count
@@ -224,7 +225,7 @@ with src_block as (
 		, (100 * reward_tx_fee_sum::decimal / (reward_subsidy_sum + reward_tx_fee_sum)::decimal
 			)::decimal(12, 9) as reward_tx_fee_pct
 		, ((reward_subsidy_sum + reward_tx_fee_sum)::decimal / pow(10, 8)::decimal
-			)::decimal(16, 8) as reward_mining_btc
+			)::decimal(16, 8) as reward_mining_sum_btc
 		, (reward_subsidy_sum::decimal / pow(10, 8)::decimal
 			)::decimal(16, 8) as reward_subsidy_sum_btc
 		, (reward_tx_fee_sum::decimal / pow(10, 8)::decimal
