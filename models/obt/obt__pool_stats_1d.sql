@@ -20,6 +20,7 @@ select
 	, dp.pool_key
 	, dp.pool_name
 	, dp.pool_url
+	, dp.is_antpool_friend
 	, dp.is_antpool_friend_custodian
 	, dp.is_antpool_friend_template
 	, fp.reported_hashrate

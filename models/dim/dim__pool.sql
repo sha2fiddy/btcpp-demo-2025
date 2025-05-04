@@ -43,6 +43,11 @@ with src_pool as (
 		, pool_key::varchar(256) as pool_key
 		, coalesce(pool_name, '[Unknown]')::varchar(256) as pool_name
 		, coalesce(pool_url, '[Unknown]')::varchar(512) as pool_url
+		, (case
+			when is_antpool_friend_custodian = true or is_antpool_friend_template = true
+			then true
+			else false
+		end)::boolean as is_antpool_friend
 		, is_antpool_friend_custodian::boolean as is_antpool_friend_custodian
 		, is_antpool_friend_template::boolean as is_antpool_friend_template
 		-- Create a dummy timestamp for deduplication (ideally there is a real audit timestamp from src data)
@@ -56,6 +61,7 @@ with src_pool as (
 		, '[Unknown]'::varchar(256) as pool_key
 		, '[Unknown]'::varchar(256) as pool_name
 		, '[Unknown]'::varchar(512) as pool_url
+		, null::boolean as is_antpool_friend
 		, null::boolean as is_antpool_friend_custodian
 		, null::boolean as is_antpool_friend_template
 		, null::timestamp as audit_created_timestamp
