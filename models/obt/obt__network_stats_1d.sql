@@ -11,33 +11,42 @@ select
 	, dd.day_of_week
 	, dd.day_of_month
 	, dd.day_of_year
-	, fn.has_subsidy_halving
-	, fn.has_difficulty_adjustment
-	, fn.difficulty_first
-	, fn.difficulty_last
-	, fn.difficulty_weighted_avg
-	, fn.block_count
-	, fn.blockheight_first
-	, fn.blockheight_last
-	, fn.pool_count
-	, fn.est_hashrate
-	, fn.est_hashrate_th
-	, fn.est_hashrate_ph
-	, fn.est_hashrate_eh
-	, fn.reward_mining_sum
-	, fn.reward_subsidy_sum
-	, fn.reward_tx_fee_sum
-	, fn.tx_count
-	, fn.reward_tx_fee_pct
-	, fn.reward_mining_sum_btc
-	, fn.reward_subsidy_sum_btc
-	, fn.reward_tx_fee_sum_btc
-	, fn.tx_fee_avg
-	, fn.tx_fee_avg_btc
-from fact.network_stats_1d as fn
+	, p.ticker
+	, p.price_close
+	, ns.has_subsidy_halving
+	, ns.has_difficulty_adjustment
+	, ns.difficulty_first
+	, ns.difficulty_last
+	, ns.difficulty_weighted_avg
+	, ns.block_count
+	, ns.blockheight_first
+	, ns.blockheight_last
+	, ns.pool_count
+	, ns.est_hashrate
+	, ns.est_hashrate_th
+	, ns.est_hashrate_ph
+	, ns.est_hashrate_eh
+	, ns.reward_mining_sum
+	, ns.reward_subsidy_sum
+	, ns.reward_tx_fee_sum
+	, ns.tx_count
+	, ns.reward_tx_fee_pct
+	, ns.reward_mining_sum_btc
+	, ns.reward_subsidy_sum_btc
+	, ns.reward_tx_fee_sum_btc
+	-- Derive USD amounts based on daily price close
+	, (p.price_close * reward_mining_sum_btc)::decimal(21, 6) as reward_mining_sum_usd
+	, (p.price_close * reward_subsidy_sum_btc)::decimal(21, 6) as reward_subsidy_sum_usd
+	, (p.price_close * reward_tx_fee_sum_btc)::decimal(21, 6) as reward_tx_fee_sum_usd
+	, ns.tx_fee_avg
+	, ns.tx_fee_avg_btc
+	, (p.price_close * tx_fee_avg_btc)::decimal(21, 6) as tx_fee_avg_usd
+from fact.network_stats_1d as ns
 -- Having coalesced to the default/unknown dim ids in facts, optimal inner joins can be used in obts
+inner join fact.price_1d as p
+	on p.date_id = ns.date_id
 inner join dim.date as dd
-	on dd.date_id = fn.date_id
+	on dd.date_id = ns.date_id
 
 );
 

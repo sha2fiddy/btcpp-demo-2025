@@ -18,33 +18,33 @@ select
 	, dp.is_antpool_friend
 	, dp.is_antpool_friend_custodian
 	, dp.is_antpool_friend_template
-	, fp.reported_hashrate
-	, fp.reported_hashrate_th
-	, fp.reported_hashrate_ph
-	, fp.reported_hashrate_eh
-	, fp.est_hashrate
-	, fp.est_hashrate_th
-	, fp.est_hashrate_ph
-	, fp.est_hashrate_eh
-	, fp.block_count
-	, fp.blockheight_first
-	, fp.blockheight_last
-	, fp.reward_mining_sum
-	, fp.reward_subsidy_sum
-	, fp.reward_tx_fee_sum
-	, fp.tx_count
-	, fp.reward_tx_fee_pct
-	, fp.reward_mining_sum_btc
-	, fp.reward_subsidy_sum_btc
-	, fp.reward_tx_fee_sum_btc
-	, fp.tx_fee_avg
-	, fp.tx_fee_avg_btc
-from fact.pool_stats_1d as fp
+	, ps.reported_hashrate
+	, ps.reported_hashrate_th
+	, ps.reported_hashrate_ph
+	, ps.reported_hashrate_eh
+	, ps.est_hashrate
+	, ps.est_hashrate_th
+	, ps.est_hashrate_ph
+	, ps.est_hashrate_eh
+	, ps.block_count
+	, ps.blockheight_first
+	, ps.blockheight_last
+	, ps.reward_mining_sum
+	, ps.reward_subsidy_sum
+	, ps.reward_tx_fee_sum
+	, ps.tx_count
+	, ps.reward_tx_fee_pct
+	, ps.reward_mining_sum_btc
+	, ps.reward_subsidy_sum_btc
+	, ps.reward_tx_fee_sum_btc
+	, ps.tx_fee_avg
+	, ps.tx_fee_avg_btc
+from fact.pool_stats_1d as ps
 -- Having coalesced to the default/unknown dim ids in facts, optimal inner joins can be used in obts
 inner join dim.date as dd
-	on dd.date_id = fp.date_id
+	on dd.date_id = ps.date_id
 inner join dim.pool as dp
-	on dp.pool_id = fp.pool_id
+	on dp.pool_id = ps.pool_id
 
 );
 
