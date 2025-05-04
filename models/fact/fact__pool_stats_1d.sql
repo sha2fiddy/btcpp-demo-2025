@@ -12,13 +12,7 @@ with src_block as (
 		, timestamp::date as event_date
 		, timestamp::timestamp as event_timestamp
 		, trim(pool_key::varchar) as pool_key
-		-- Create flags for subsidy halvings and difficulty adjustments (derived here to avoid verbose transformations)
-		, (case
-			when round(blockheight::decimal / 210000::decimal, 9)
-				= floor(blockheight::decimal / 210000::decimal)
-			then true
-			else false
-		end)::boolean as is_subsidy_halving
+		-- Create flag for difficulty adjustments (derived here to avoid verbose transformations)
 		, (case
 			when round(blockheight::decimal / 2016::decimal, 9)
 				= floor(blockheight::decimal / 2016::decimal)
@@ -84,8 +78,7 @@ with src_block as (
 	select
 		  event_date
 		, pool_key
-		-- If any block has a halving or difficulty adjustment return true, else false
-		, bool_or(is_subsidy_halving) as has_subsidy_halving
+		-- If any block has a difficulty adjustment return true, else false
 		, bool_or(is_difficulty_adjustment) as has_difficulty_adjustment
 		, count(distinct block_key) as block_count
 		, min(blockheight) as blockheight_first
@@ -150,10 +143,6 @@ with src_block as (
 		  dd.date_id
 		-- If no match was found in dim tables, use the default/unknown row (this enables inner joins downstream)
 		, coalesce(dp.pool_id, '0') as pool_id
-		, a.has_subsidy_halving
-		, a.has_difficulty_adjustment
-		, hd.difficulty_first
-		, hd.difficulty_last
 		-- If no adjustment occured, fill the weighted avg with the consistent difficulty for those days
 		, coalesce(hd.difficulty_weighted_avg, hd.difficulty_first) as difficulty_weighted_avg
 		, h.reported_hashrate
@@ -182,11 +171,6 @@ with src_block as (
 	select
 		  date_id::varchar(512) as date_id
 		, pool_id::varchar(512) as pool_id
-		, has_subsidy_halving::boolean as has_subsidy_halving
-		, has_difficulty_adjustment::boolean as has_difficulty_adjustment
-		, difficulty_first::decimal(30, 9) as difficulty_first
-		, difficulty_last::decimal(30, 9) as difficulty_last
-		, difficulty_weighted_avg::decimal(30, 9) as difficulty_weighted_avg
 		-- Reported hashrate only available for some pools
 		, reported_hashrate::decimal(30, 9) as reported_hashrate
 		, (reported_hashrate::decimal / pow(10, 12)::decimal)::decimal(30, 12) as reported_hashrate_th

@@ -11,11 +11,6 @@ select
 	, dd.day_of_week
 	, dd.day_of_month
 	, dd.day_of_year
-	, fp.has_subsidy_halving
-	, fp.has_difficulty_adjustment
-	, fp.difficulty_first
-	, fp.difficulty_last
-	, fp.difficulty_weighted_avg
 	, dp.pool_id
 	, dp.pool_key
 	, dp.pool_name
