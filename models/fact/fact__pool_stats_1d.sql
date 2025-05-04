@@ -78,7 +78,8 @@ with src_block as (
 	where dedupe_rn = 1
 )
 
-, aggregate as (
+-- Derive daily pool-level aggregates
+, aggregate_pool as (
 	select
 		  event_date
 		, pool_key
@@ -96,6 +97,17 @@ with src_block as (
 	group by event_date, pool_key
 )
 
+-- Derive daily network-level aggregates (needed for difficulty adjustment block)
+, aggregate_network as (
+	select
+		  event_date
+		, bool_or(has_difficulty_adjustment) as has_difficulty_adjustment
+		, min(blockheight_first) as blockheight_first
+		, max(blockheight_last) as blockheight_last
+	from aggregate_pool
+	group by event_date
+)
+
 , handle_difficulty_adjustments as (
 	select
 		  a.event_date
@@ -105,7 +117,7 @@ with src_block as (
 	  	, ((da.difficulty_first::decimal * da.duration_first_sec::decimal / 86400::decimal)
 			+ (da.difficulty_last::decimal * da.duration_last_sec::decimal / 86400::decimal)
 			)::decimal(30, 9) as difficulty_weighted_avg
-	from aggregate as a
+	from aggregate_network as a
 	-- Join to first & last block on each date for difficulty of the last block
 	inner join deduplicate_block as d1
 		on d1.blockheight = a.blockheight_first
@@ -120,7 +132,7 @@ with src_block as (
 			-- Calculate seconds spent at each difficulty level on adjustment date
 			, abs(extract(epoch from d2.event_timestamp - a.event_date)) as duration_first_sec
 			, abs(extract(epoch from a.event_date + interval '1 day' - d2.event_timestamp)) as duration_last_sec
-		from aggregate as a
+		from aggregate_network as a
 		-- Join to the first block of each date and the difficulty adjustment block
 		inner join deduplicate_block as d1
 			on d1.blockheight = a.blockheight_first
@@ -151,11 +163,12 @@ with src_block as (
 		, a.reward_tx_fee_sum
 		, a.tx_count
 		, a.audit_created_timestamp
-	from aggregate as a
+	from aggregate_pool as a
 	inner join handle_difficulty_adjustments as hd
 		on hd.event_date = a.event_date
 	left join deduplicate_hashrate as h
 		on h.event_date = a.event_date
+		and h.pool_key = a.pool_key
 	inner join dim.date as dd
 		on dd.date = a.event_date
 	-- Left join dims (other than date) in case no match is found
@@ -164,7 +177,60 @@ with src_block as (
 )
 
 , standardize as (
-	select *
+	select
+		  date_id::varchar(512) as date_id
+		, pool_id::varchar(512) as pool_id
+		, has_subsidy_halving::boolean as has_subsidy_halving
+		, has_difficulty_adjustment::boolean as has_difficulty_adjustment
+		, difficulty_first::decimal(30, 9) as difficulty_first
+		, difficulty_last::decimal(30, 9) as difficulty_last
+		, difficulty_weighted_avg::decimal(30, 9) as difficulty_weighted_avg
+		-- Reported hashrate only available for some pools
+		, reported_hashrate::decimal(30, 9) as reported_hashrate
+		, (reported_hashrate::decimal / pow(10, 12)::decimal)::decimal(30, 12) as reported_hashrate_th
+		, (reported_hashrate::decimal / pow(10, 15)::decimal)::decimal(30, 15) as reported_hashrate_ph
+		, (reported_hashrate::decimal / pow(10, 18)::decimal)::decimal(30, 18) as reported_hashrate_eh
+		-- Estimate pool hashrate as block count * difficulty * 2^32 / seconds in a day
+		, (case
+			when block_count = 0 then 0
+			else block_count::decimal * difficulty_weighted_avg::decimal
+				* pow(2, 32)::decimal / 86400::decimal
+		end)::decimal(30, 0) as est_hashrate
+		-- Add common hashrate scales
+		, (case
+			when block_count = 0 then 0
+			else block_count::decimal * difficulty_weighted_avg::decimal
+				* pow(2, 32)::decimal / 86400::decimal / pow(10, 12)::decimal
+		end)::decimal(30, 12) as est_hashrate_th
+		, (case
+			when block_count = 0 then 0
+			else block_count::decimal * difficulty_weighted_avg::decimal
+				* pow(2, 32)::decimal / 86400::decimal / pow(10, 15)::decimal
+		end)::decimal(30, 15) as est_hashrate_ph
+		, (case
+			when block_count = 0 then 0
+			else block_count::decimal * difficulty_weighted_avg::decimal
+				* pow(2, 32)::decimal / 86400::decimal / pow(10, 18)::decimal
+		end)::decimal(30, 18) as est_hashrate_eh
+		, block_count::int as block_count
+		, blockheight_first::int as blockheight_first
+		, blockheight_last::int as blockheight_last
+		, reward_subsidy_sum::bigint as reward_subsidy_sum
+		, reward_tx_fee_sum::bigint as reward_tx_fee_sum
+		, tx_count::int as tx_count
+		-- Add BTC scale numbers (vs Sats scale)
+		, (100 * reward_tx_fee_sum::decimal / (reward_subsidy_sum + reward_tx_fee_sum)::decimal
+			)::decimal(12, 9) as reward_tx_fee_pct
+		, ((reward_subsidy_sum + reward_tx_fee_sum)::decimal / pow(10, 8)::decimal
+			)::decimal(16, 8) as reward_mining_btc
+		, (reward_subsidy_sum::decimal / pow(10, 8)::decimal
+			)::decimal(16, 8) as reward_subsidy_sum_btc
+		, (reward_tx_fee_sum::decimal / pow(10, 8)::decimal
+			)::decimal(16, 8) as reward_tx_fee_sum_btc
+		, (reward_tx_fee_sum::decimal / tx_count::decimal)::decimal(16, 3) as tx_fee_avg
+		, (reward_tx_fee_sum::decimal / tx_count::decimal / pow(10, 8)::decimal
+			)::decimal(19, 11) as tx_fee_avg_btc
+		, audit_created_timestamp::timestamp as audit_created_timestamp
 	from relations
 )
 
