@@ -27,10 +27,10 @@
 
 # Source Data
 - To reduce file sizes, all source data has been limited to calendar year 2024, plus one month prior (Dec 2023) and one month after (Jan 2025), in case any look back or forward is needed.
-- Bitcoin block data was sourced from a Bitcoin Core node (via Mempool Space's API): [https://mempool.space/docs/api/rest#get-blocks-bulk](https://mempool.space/docs/api/rest#get-blocks-bulk). **NOTE**: The bulk blocks endpoint is not enabled on the public site, it can be enabled on a self-hosted instance through the API config.
-- Mining pool data was sourced from Mempool Space's open source repository of mining pools: [https://github.com/mempool/mining-pools/blob/master/pools-v2.json](https://github.com/mempool/mining-pools/blob/master/pools-v2.json)
+- Bitcoin block data was sourced from a Bitcoin Core node (via Mempool Space's API): [https://mempool.space/docs/api/rest#get-blocks-bulk](https://mempool.space/docs/api/rest#get-blocks-bulk). The attribute list returned from this endpoint has been reduced to keep the sample data files small. **NOTE**: The bulk blocks endpoint is not enabled on the public Mempool Space site, but it can be enabled on a self-hosted instance through the API config.
+- Mining pool data was sourced from Mempool Space's open source repository of pools: [https://github.com/mempool/mining-pools/blob/master/pools-v2.json](https://github.com/mempool/mining-pools/blob/master/pools-v2.json)
 - Bitcoin spot price data was sourced from Coinmetrics community (free tier) API: [https://docs.coinmetrics.io/api/v4/](https://docs.coinmetrics.io/api/v4/).
-- Pool hashrate data was obtained from mining pools who provide this data freely, without needing API keys.
+- Pool hashrate data was obtained from several mining pools who provide this data freely, without needing accounts or API keys.
 
 # Setup Instructions
 
@@ -60,17 +60,17 @@
 
 ## 📁 How to load additional seed data with csv files
 1. Add the csv file to the `./data` folder
-2. Create a new `.sql` file inside `./migrations/` with a `COPY` command like:
+2. Create a new `.sql` file inside `./migrations/` with a `copy` command like:
    ```sql
-   copy your_table(<columns>) from '/data/your_file.csv' delimiter ',' csv header;
+   copy <table>(<columns>) from '/data/<filename>.csv' delimiter ',' csv header;
    ```
 3. Mount this SQL file in `docker-compose.yml` under the `postgres` service:
    ```yaml
-   - ./migrations/5-load-yourfile.sql:/docker-entrypoint-initdb.d/5-load-yourfile.sql
+   - ./migrations/<sequence>-<name>.sql:/docker-entrypoint-initdb.d/<sequence>-<name>.sql
    ```
 
 # Workshop Guide
-For the purpose of the workshop, we will be creating models by running SQL directly in pgAdmin. In a production environment, it is highly recommended to create models through migration files with idempotency, or to use a data modeling framework such as dbt: [https://www.getdbt.com/](https://www.getdbt.com/).
+For the purpose of the workshop, we will be creating models by running SQL directly in pgAdmin. In a production environment, it is highly recommended to materialize models through migration files with idempotency, or to use a data modeling framework such as dbt: [https://www.getdbt.com/](https://www.getdbt.com/).
 
 Example SQL is given in the /models/ directory as a starting point. In the workshape we will materialize DIM and FACT models as tables, and OBT models as views. In a production environment, it is also recommended to add unique key constraints, column indexes, and other common database optimizations.
 
@@ -79,7 +79,7 @@ Example SQL is given in the /models/ directory as a starting point. In the works
 ## 1 Dimension Models
 
 ### 1.1 DIM Date
-The date dimension model is part of the initial migrations and will be built automatically. This model contains one row per calendar date, with many helpful columns that can be used for analysis (e.g. `day_of_week`, `month_start_date`). This is a unique model where the primary surrogate key (`date_id`), a stringified date formatted as 'yyyymmdd'.
+The date dimension model is part of the initial migrations and will be built automatically. This model contains one row per calendar date, with many helpful columns that can be used for analysis (e.g. `day_of_week`, `month_start_date`). This is a unique model where the primary surrogate key (`date_id`) is a stringified date, formatted as 'yyyymmdd'.
 
 #### Data Granularity
 - `date_id`
@@ -91,7 +91,7 @@ Create a pool dimension model with a formatted display name and url, as well as 
 - `pool_id`
 
 ### 1.3 DIM Block
-Create a Bitcoin block dimension model to hold any categorical data pertaining to each block, such as `block_hash`, `prev_block_hash`.
+Create a Bitcoin block dimension model to hold any categorical data pertaining to each block, such as `block_hash`, `is_subsidy_halving`, `is_difficulty_adjustment`.
 
 #### Data Granularity
 - `block_id`
@@ -101,7 +101,7 @@ Create a Bitcoin block dimension model to hold any categorical data pertaining t
 ## 2 Fact Models
 
 ### 2.1 FACT Block
-Create a Bitcoin block fact model with the `blockheight`, `timestamp`, and numerical data such as `block_size`, `reward_subsidy`. **NOTE**: if lower granularity than block-level data is never needed (IE no transaction-level data), it is possible to include all attributes from the Bitcoin block dimension model directly in this fact.  This practice is commonly referred to as a 'degenerate dimension'.
+Create a Bitcoin block fact model with the `blockheight`, `timestamp`, and numerical data such as `block_size`, `reward_subsidy`. **NOTE**: if lower than block-level data granularity is never needed (IE no transaction-level data), it is possible to include all attributes from the Bitcoin block dimension model directly in this fact.  This practice is commonly referred to as 'degenerate dimension' attributes.
 
 #### Data Granularity
 - `block_id`
@@ -131,7 +131,7 @@ Create a daily pool stats fact model including `block_count`, `reported_hashrate
 - `dim.date.date_id`
 - `dim.pool.pool_id`
 
-### 2:4 FACT Price 1d
+### 2.4 FACT Price 1d
 Create a daily Bitcoin price fact model including `price_open`, `price_close`, and deriving `price_change`, `price_spread`, etc. **NOTE**: For simplicity, this only contains BTC-USD price data. If other coins or tickers are involved, a coin dimension table should also be built.
 
 #### Data Granularity
@@ -165,13 +165,16 @@ Create a daily pool stats OBT model which combines attributes from the pool stat
 
 ---
 
-## Next Steps
-### Additional Model Ideas (without existing sample data)
+## 4 Next Steps
+### 4.1 Additional Model Ideas (without existing sample data)
 - An OBT model which contains one row per difficulty or subsidy epoch, with aggregate metrics pertaining to each epoch.
 - An OBT model which contains one row per mining pool, which aggregates all time metrics pertaining to each pool.
 - An OBT model which contains more sophisticated statistical modeling around mining 'luck' (aka variability).
 
-### Additional Data Source Ideas
+### 4.2 Additional Data Source Ideas
 - Bitcoin transactions or address balances, for financial accounting or on-chain forensics (this is when the Bitcoin block dimension table is required).
 - Stratum job templates or Bitcoin node logs, to analyze mining pool centralization or block relay efficiency.
 - Power consumption or price history, to analyze hashrate correlation or mining hardware efficiency.
+
+# Resources
+TODO
