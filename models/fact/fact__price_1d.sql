@@ -30,7 +30,7 @@ with src_price as (
 			, row_number() over (
 				-- The partition defines the data granularity (unique natural key or keys)
 				partition by event_date
-				-- Best practice is to deduplicate records based on an actual metadata/audit timestamp
+				-- This should be a timestamp of when source data was last updated (lacking that, when row was loaded to src table)
 				order by audit_created_timestamp desc
 			) as dedupe_rn
 		from src_price

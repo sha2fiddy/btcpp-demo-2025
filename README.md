@@ -6,7 +6,7 @@
 - Docker compose containing:
    - Postgres
    - pgAdmin (a GUI toolset for Postgres)
-   - Instructions to run initial setup SQL migrations
+   - Automatically run initial SQL migrations to load sample data
 - A /data/ dir with sample data csv's
 - A /migrations/ dir with scripts to create schemas (src, dim, fact, obt), and load csv's to src tables
 - A /models/ dir with sample data models (dim, fact, obt)
