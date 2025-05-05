@@ -24,10 +24,10 @@ with combined_data as (
 		, ps.reported_hashrate_th
 		, ps.reported_hashrate_ph
 		, ps.reported_hashrate_eh
-		, ps.est_hashrate
-		, ps.est_hashrate_th
-		, ps.est_hashrate_ph
-		, ps.est_hashrate_eh
+		, ps.estimated_hashrate
+		, ps.estimated_hashrate_th
+		, ps.estimated_hashrate_ph
+		, ps.estimated_hashrate_eh
 		-- Derive expected block count as hashate * seconds in a day / difficulty / 2^32
 		, (ps.reported_hashrate * 86400 / ns.difficulty_weighted_avg / pow(2, 32)
 			)::decimal(12, 9) as expected_block_count
@@ -78,10 +78,10 @@ select
 	, reported_hashrate_th
 	, reported_hashrate_ph
 	, reported_hashrate_eh
-	, est_hashrate
-	, est_hashrate_th
-	, est_hashrate_ph
-	, est_hashrate_eh
+	, estimated_hashrate
+	, estimated_hashrate_th
+	, estimated_hashrate_ph
+	, estimated_hashrate_eh
 	, expected_block_count
 	, block_count
 	-- Derive actual vs expected block count diff, pct diff, and mining 'luck' (aka variability)

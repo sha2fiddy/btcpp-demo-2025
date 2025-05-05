@@ -23,10 +23,10 @@ with combined_data as (
         , ns.blockheight_first
         , ns.blockheight_last
         , ns.pool_count
-        , ns.est_hashrate
-        , ns.est_hashrate_th
-        , ns.est_hashrate_ph
-        , ns.est_hashrate_eh
+        , ns.estimated_hashrate
+        , ns.estimated_hashrate_th
+        , ns.estimated_hashrate_ph
+        , ns.estimated_hashrate_eh
         , ns.reward_mining_sum
         , ns.reward_subsidy_sum
         , ns.reward_tx_fee_sum
@@ -43,8 +43,8 @@ with combined_data as (
         , ns.tx_fee_avg_btc
         , (p.price_close * tx_fee_avg_btc)::decimal(21, 6) as tx_fee_avg_usd
         -- Derive Sats-denominated network-level hashvalue based on estimated hashrate
-        , (ns.reward_mining_sum::decimal / est_hashrate_th::decimal)::decimal(30, 9) as hashvalue_sat_th
-        , (ns.reward_mining_sum::decimal / est_hashrate_ph::decimal)::decimal(30, 9) as hashvalue_sat_ph
+        , (ns.reward_mining_sum::decimal / estimated_hashrate_th::decimal)::decimal(30, 9) as hashvalue_sat_th
+        , (ns.reward_mining_sum::decimal / estimated_hashrate_ph::decimal)::decimal(30, 9) as hashvalue_sat_ph
     from fact.network_stats_1d as ns
     -- Having coalesced to the default/unknown dim ids in facts, optimal inner joins can be used in obts
     inner join fact.price_1d as p
@@ -70,10 +70,10 @@ select
     , blockheight_first
     , blockheight_last
     , pool_count
-    , est_hashrate
-    , est_hashrate_th
-    , est_hashrate_ph
-    , est_hashrate_eh
+    , estimated_hashrate
+    , estimated_hashrate_th
+    , estimated_hashrate_ph
+    , estimated_hashrate_eh
     , reward_mining_sum
     , reward_subsidy_sum
     , reward_tx_fee_sum
