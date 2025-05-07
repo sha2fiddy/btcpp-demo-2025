@@ -177,19 +177,23 @@ Create a daily pool stats OBT model which combines attributes from the pool stat
 - Power consumption or price history, to analyze hashrate correlation or mining hardware efficiency.
 
 # Resources
-#### Data Modeling Fundamdentals
+### Data Modeling Fundamdentals
 - What is Data Modeling?: [https://aws.amazon.com/what-is/data-modeling/](https://aws.amazon.com/what-is/data-modeling/)
 - Types of Data Models: [https://en.wikipedia.org/wiki/Database_model](https://en.wikipedia.org/wiki/Database_model)
 
-#### Columnar Databases
+### Columnar Databases
 - About Columnar Databases: [https://databasetown.com/columnar-databases/](https://databasetown.com/columnar-databases/)
 
-#### Data Build Tool (dbt)
+### Data Build Tool (dbt)
 - dbt: [https://docs.getdbt.com/](https://docs.getdbt.com/)
 - What is dbt?: [https://docs.getdbt.com/docs/introduction](https://docs.getdbt.com/docs/introduction)
 - dbt Resources: [https://github.com/Hiflylabs/awesome-dbt](https://github.com/Hiflylabs/awesome-dbt)
 
-#### dbt Alernatives
+### dbt Alernatives
 **NOTE**: No experience with or recommendation of these tools.
 - SQLMesh: [https://sqlmesh.com/](https://sqlmesh.com/)
 - Coalesce: [https://coalesce.io/](https://coalesce.io/)
+
+### Mempool Space API
+- Websocket (monitor for blocks): [https://mempool.space/docs/api/websocket#live-data](https://mempool.space/docs/api/websocket#live-data)
+- Bulk Blocks (not available on public server): [https://mempool.space/docs/api/rest#get-blocks-bulk](https://mempool.space/docs/api/rest#get-blocks-bulk)
