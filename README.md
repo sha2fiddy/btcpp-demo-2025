@@ -34,7 +34,7 @@
 
 # Setup Instructions
 
-## 🚀 How to start Postgres and pgAdmin
+#### 🚀 How to start Postgres and pgAdmin
 - Initial build:
    ```
    docker compose up -d --build
@@ -44,7 +44,7 @@
    docker compose up -d
    ```
 
-## 🛑 How to stop Postgres and pgAdmin
+#### 🛑 How to stop Postgres and pgAdmin
 - With deleting data volumes:
    ```
    docker compose down -v
@@ -54,11 +54,11 @@
    docker compose down
    ```
 
-## 🌐 How to open pgAdmin
+#### 🌐 How to open pgAdmin
 1. Open your browser and go to: [http://localhost:5050/browser/](http://localhost:5050/browser/)
 2. Sign in and create server connection using the credentials in the .env file
 
-## 📁 How to load additional seed data with csv files
+#### 📁 How to load additional seed data with csv files
 1. Add the csv file to the `./data` folder
 2. Create a new `.sql` file inside `./migrations/` with a `copy` command like:
    ```sql
@@ -66,7 +66,7 @@
    ```
 3. Mount this SQL file in `docker-compose.yml` under the `postgres` service:
    ```yaml
-   - ./migrations/<sequence>-<name>.sql:/docker-entrypoint-initdb.d/<sequence>-<name>.sql
+   ./migrations/<sequence>-<name>.sql:/docker-entrypoint-initdb.d/<sequence>-<name>.sql
    ```
 
 # Workshop Guide
@@ -177,4 +177,19 @@ Create a daily pool stats OBT model which combines attributes from the pool stat
 - Power consumption or price history, to analyze hashrate correlation or mining hardware efficiency.
 
 # Resources
-TODO
+#### Data Modeling Fundamdentals
+- What is Data Modeling?: [https://aws.amazon.com/what-is/data-modeling/](https://aws.amazon.com/what-is/data-modeling/)
+- Types of Data Models: [https://en.wikipedia.org/wiki/Database_model](https://en.wikipedia.org/wiki/Database_model)
+
+#### Columnar Databases
+- About Columnar Databases: [https://databasetown.com/columnar-databases/](https://databasetown.com/columnar-databases/)
+
+#### Data Build Tool (dbt)
+- dbt: [https://docs.getdbt.com/](https://docs.getdbt.com/)
+- What is dbt?: [https://docs.getdbt.com/docs/introduction](https://docs.getdbt.com/docs/introduction)
+- dbt Resources: [https://github.com/Hiflylabs/awesome-dbt](https://github.com/Hiflylabs/awesome-dbt)
+
+#### dbt Alernatives
+**NOTE**: No experience with or recommendation of these tools.
+- SQLMesh: [https://sqlmesh.com/](https://sqlmesh.com/)
+- Coalesce: [https://coalesce.io/](https://coalesce.io/)
