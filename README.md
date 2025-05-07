@@ -193,6 +193,7 @@ Create a daily pool stats OBT model which combines attributes from the pool stat
 **NOTE**: No experience with or recommendation of these tools.
 - SQLMesh: [https://sqlmesh.com/](https://sqlmesh.com/)
 - Coalesce: [https://coalesce.io/](https://coalesce.io/)
+- SqlDBM: [https://sqldbm.com/Home/](https://sqldbm.com/Home/)
 
 ### Mempool Space API
 - Websocket (monitor for blocks): [https://mempool.space/docs/api/websocket#live-data](https://mempool.space/docs/api/websocket#live-data)
