@@ -166,7 +166,7 @@ Create a daily pool stats OBT model which combines attributes from the pool stat
 ---
 
 ## 4 Next Steps
-### 4.1 Additional Model Ideas (without existing sample data)
+### 4.1 Additional Model Ideas (with existing sample data)
 - An OBT model which contains one row per difficulty or subsidy epoch, with aggregate metrics pertaining to each epoch.
 - An OBT model which contains one row per mining pool, which aggregates all time metrics pertaining to each pool.
 - An OBT model which contains more sophisticated statistical modeling around mining 'luck' (aka variability).
